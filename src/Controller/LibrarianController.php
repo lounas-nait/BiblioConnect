@@ -18,10 +18,12 @@ use App\Repository\LivreRepository;
 use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[IsGranted('ROLE_LIBRARIAN')]
 class LibrarianController extends AbstractController
@@ -70,13 +72,22 @@ class LibrarianController extends AbstractController
     }
 
     #[Route('/librarian/book/new', name: 'librarian_book_new')]
-    public function newBook(Request $request, EntityManagerInterface $entityManager): Response
+    public function newBook(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $livre = new Livre();
         $form = $this->createForm(LivreType::class, $livre);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $imageFile->move($this->getParameter('kernel.project_dir').'/public/uploads/livres', $newFilename);
+                $livre->setImage('/uploads/livres/'.$newFilename);
+            }
+
             $entityManager->persist($livre);
             $entityManager->flush();
 
@@ -92,12 +103,29 @@ class LibrarianController extends AbstractController
     }
 
     #[Route('/librarian/book/{id}/edit', name: 'librarian_book_edit')]
-    public function editBook(Livre $livre, Request $request, EntityManagerInterface $entityManager): Response
+    public function editBook(Livre $livre, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $form = $this->createForm(LivreType::class, $livre);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                // Supprimer l'ancienne image si elle existe
+                if ($livre->getImage()) {
+                    $oldImagePath = $this->getParameter('kernel.project_dir').'/public'.$livre->getImage();
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $imageFile->move($this->getParameter('kernel.project_dir').'/public/uploads/livres', $newFilename);
+                $livre->setImage('/uploads/livres/'.$newFilename);
+            }
+
             $entityManager->flush();
             $this->addFlash('success', 'Ouvrage mis à jour.');
 

@@ -20,17 +20,23 @@
 
     <section class="item-card">
         <h2>Livres</h2>
-        <ul>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1rem;">
             {% for livre in livres %}
-                <li style="margin-bottom:0.75rem;">
-                    <strong>{{ livre.titre }}</strong> — {{ livre.auteur }}
-                    <div class="small-text">Stock : {{ livre.stock }}</div>
-                    <a class="btn btn-secondary" href="{{ path('librarian_book_edit', {'id': livre.id}) }}">Modifier</a>
-                </li>
+                <div class="book-card" style="text-align: center;">
+                    {% if livre.image %}
+                        <img src="{{ livre.image }}" alt="Couverture de {{ livre.titre }}" style="width: 100%; height: 220px; object-fit: cover; border-radius: 12px; margin-bottom: 1rem; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);">
+                    {% else %}
+                        <div style="width: 100%; height: 220px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem;">📚</div>
+                    {% endif %}
+                    <h3 style="margin: 0.5rem 0; font-size: 1rem;">{{ livre.titre }}</h3>
+                    <div class="small-text">{{ livre.auteur }}</div>
+                    <div class="small-text">Stock : <strong>{{ livre.stock }}</strong></div>
+                    <a class="btn btn-secondary" href="{{ path('librarian_book_edit', {'id': livre.id}) }}" style="margin-top: 0.75rem; display: inline-block;">Modifier</a>
+                </div>
             {% else %}
                 <p class="small-text">Aucun livre dans le catalogue.</p>
             {% endfor %}
-        </ul>
+        </div>
     </section>
 
     <div class="admin-grid" style="margin-top:1.5rem;">

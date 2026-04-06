@@ -23,6 +23,12 @@
     </div>
 
     <div class="card-grid">
+        {% if livre.image %}
+        <div class="book-card" style="text-align: center;">
+            <img src="{{ livre.image }}" alt="Couverture de {{ livre.titre }}" style="max-width: 100%; height: 300px; object-fit: cover; border-radius: 18px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);">
+        </div>
+        {% endif %}
+        
         <div class="book-card">
             <p class="small-text">Stock disponible: <strong>{{ livre.stock ?? 'Non précisé' }}</strong></p>
             <div style="margin: 1rem 0;">

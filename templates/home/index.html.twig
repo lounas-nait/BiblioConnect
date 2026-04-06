@@ -8,32 +8,83 @@
         <p class="hero__eyebrow">Bienvenue sur BiblioConnect</p>
         <h1>Votre espace de lecture moderne</h1>
         <p class="hero__subtitle">Gérez vos livres, suivez vos prêts et accédez rapidement à votre compte depuis un seul endroit.</p>
-        <div class="hero__actions">
-            <a href="{{ path('app_register') }}" class="btn btn-primary">S'inscrire</a>
-            <a href="{{ path('app_login') }}" class="btn btn-secondary">Se connecter</a>
-        </div>
+        {% if not app.user %}
+            <div class="hero__actions">
+                <a href="{{ path('app_register') }}" class="btn btn-primary">S'inscrire</a>
+                <a href="{{ path('app_login') }}" class="btn btn-secondary">Se connecter</a>
+            </div>
+        {% endif %}
     </div>
 
     <div class="hero__card">
         <div class="hero__card-inner">
-            <h2>Commencez dès maintenant</h2>
-            <p>Inscrivez-vous pour créer votre bibliothèque personnelle ou connectez-vous pour continuer.</p>
-            <div class="hero__stats">
+            {% if not app.user %}
+                <h2>Commencez dès maintenant</h2>
+                <p>Inscrivez-vous pour créer votre bibliothèque personnelle ou connectez-vous pour continuer.</p>
+            {% else %}
+                <h2>Bienvenue, {{ app.user.prenom }} 👋</h2>
+                <p>Explorez notre catalogue de livres, gérez vos réservations et découvrez vos prochaines lectures.</p>
+                <div style="margin-top: 1.5rem;">
+                    <a href="{{ path('catalogue_index') }}" class="btn btn-primary">Parcourir le catalogue</a>
+                    {% if is_granted('ROLE_USER') and not is_granted('ROLE_LIBRARIAN') and not is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('profile_index') }}" class="btn btn-secondary">Mon profil</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            <div class="hero__stats" style="margin-top: {% if app.user %}2.5rem{% else %}1.5rem{% endif %};">
+                <div>
+                    <strong>1000+</strong>
+                    <span>Livres en catalogue</span>
+                </div>
+                <div>
+                    <strong>24/7</strong>
+                    <span>Accès disponible</span>
+                </div>
                 <div>
                     <strong>100%</strong>
-                    <span>Sécurisé</span>
-                </div>
-                <div>
-                    <strong>Instantané</strong>
-                    <span>Accès rapide</span>
-                </div>
-                <div>
-                    <strong>Simple</strong>
-                    <span>Interface claire</span>
+                    <span>Gratuit</span>
                 </div>
             </div>
         </div>
     </div>
+
+    {% if not app.user or (is_granted('ROLE_USER') and not is_granted('ROLE_LIBRARIAN') and not is_granted('ROLE_ADMIN')) %}
+    <div class="hero__features">
+        <h2 style="color: white;">Pourquoi choisir BiblioConnect ?</h2>
+        <div class="features__grid">
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3>Catalogue complet</h3>
+                <p>Découvrez plus de 1000 livres classés par catégorie et auteur, facilement accessibles.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Réservation simple</h3>
+                <p>Réservez les livres que vous souhaitez lire et recevez une notification dès qu'ils sont disponibles.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <h3>Avis et notes</h3>
+                <p>Partagez vos impressions, lisez les avis d'autres lecteurs et trouvez vos prochains coups de cœur.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">❤️</div>
+                <h3>Mes favoris</h3>
+                <p>Sauvegardez les livres qui vous intéressent pour les retrouver rapidement.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>Communauté</h3>
+                <p>Rejoignez une communauté de lecteurs passionnés et partagez vos lectures.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3>Sécurisé</h3>
+                <p>Vos données sont protégées et votre vie privée est notre priorité.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 <style>
@@ -41,8 +92,25 @@
         margin: 0;
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         color: #111827;
-        background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 28%),
-                    linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        background: linear-gradient(135deg, #7f91e3 0%, #764ba2 100%);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.3) 0%, transparent 50%),
+            url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: -1;
     }
 
     .hero {
@@ -50,6 +118,8 @@
         display: grid;
         place-items: center;
         padding: 3rem 1.5rem;
+        position: relative;
+        z-index: 1;
     }
 
     .hero__panel,
@@ -62,9 +132,10 @@
         max-width: 720px;
         padding: 3rem 3.5rem;
         border-radius: 32px;
-        background: rgba(255, 255, 255, 0.92);
-        box-shadow: 0 40px 120px rgba(15, 23, 42, 0.12);
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 40px 120px rgba(15, 23, 42, 0.2);
         backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
     }
 
     .hero__eyebrow {
@@ -85,6 +156,10 @@
         font-size: clamp(2.8rem, 4vw, 4.5rem);
         line-height: 1.02;
         letter-spacing: -0.05em;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
     .hero__subtitle {
@@ -118,16 +193,20 @@
     }
 
     .btn-primary {
-        background: #4338ca;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: #ffffff;
-        box-shadow: 0 18px 35px rgba(67, 56, 202, 0.28);
+        box-shadow: 0 18px 35px rgba(102, 126, 234, 0.38);
     }
 
     .btn-secondary {
         background: #ffffff;
-        color: #4338ca;
-        border: 1px solid rgba(67, 56, 202, 0.16);
-        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        color: #667eea;
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+    }
+
+    .btn-secondary:hover {
+        background: #f3f4f6;
     }
 
     .hero__card {
@@ -137,14 +216,18 @@
     .hero__card-inner {
         padding: 2.5rem;
         border-radius: 28px;
-        background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(249,250,251,0.95));
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        box-shadow: 0 30px 90px rgba(15, 23, 42, 0.08);
+        background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(249,250,251,0.98));
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        box-shadow: 0 30px 90px rgba(15, 23, 42, 0.12);
     }
 
     .hero__card-inner h2 {
         margin: 0 0 1rem;
         font-size: 1.75rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
     .hero__card-inner p {
@@ -162,18 +245,81 @@
     .hero__stats div {
         padding: 1rem 1.15rem;
         border-radius: 18px;
-        background: #eef2ff;
+        background: linear-gradient(135deg, #f0f4ff 0%, #f5f3ff 100%);
+        border: 1px solid rgba(102, 126, 234, 0.1);
     }
 
     .hero__stats strong {
         display: block;
         font-size: 1.35rem;
         margin-bottom: 0.25rem;
-        color: #1e3a8a;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
     .hero__stats span {
         color: #475569;
+        font-size: 0.95rem;
+    }
+
+    .hero__features {
+        margin-top: 4rem;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .hero__features h2 {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 3rem;
+        background: white;
+        padding: 2rem;
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.1);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .features__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .feature-card {
+        padding: 2rem;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 30px 80px rgba(102, 126, 234, 0.2);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .feature-card h3 {
+        margin: 0 0 0.75rem;
+        font-size: 1.35rem;
+        color: #111827;
+    }
+
+    .feature-card p {
+        margin: 0;
+        color: #6b7280;
+        line-height: 1.7;
         font-size: 0.95rem;
     }
 
@@ -184,6 +330,18 @@
 
         .hero__subtitle {
             font-size: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2rem;
+        }
+
+        .hero__features h2 {
+            font-size: 1.75rem;
+        }
+
+        .features__grid {
+            grid-template-columns: 1fr;
         }
     }
 </style>
