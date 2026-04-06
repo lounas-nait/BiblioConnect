@@ -67,11 +67,12 @@
                     <a href="{{ path('home') }}" class="brand"><span>BC</span>BiblioConnect</a>
                     <nav class="nav-links">
                         <a href="{{ path('catalogue_index') }}" class="nav-link">Catalogue</a>
-                        {% if app.user %}
+                        {% if is_granted('ROLE_USER') and not is_granted('ROLE_LIBRARIAN') and not is_granted('ROLE_ADMIN') %}
                             <a href="{{ path('profile_index') }}" class="nav-link">Mon profil</a>
                         {% endif %}
                         {% if is_granted('ROLE_LIBRARIAN') %}
                             <a href="{{ path('librarian_dashboard') }}" class="nav-link">Bibliothécaire</a>
+                            <a href="{{ path('librarian_reservations') }}" class="nav-link">Réservations</a>
                         {% endif %}
                         {% if is_granted('ROLE_ADMIN') %}
                             <a href="{{ path('admin_dashboard') }}" class="nav-link">Admin</a>

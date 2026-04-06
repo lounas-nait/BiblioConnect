@@ -17,6 +17,11 @@ class FavoriteController extends AbstractController
     #[Route('/favorite/toggle/{id}', name: 'favorite_toggle')]
     public function toggle(Livre $livre, FavoriRepository $favoriRepository, EntityManagerInterface $entityManager): Response
     {
+        // Bloquer admins et librarians
+        if ($this->isGranted('ROLE_LIBRARIAN') || $this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Les bibliothécaires et administrateurs ne peuvent pas ajouter de favoris.');
+        }
+
         $user = $this->getUser();
         $favorite = $favoriRepository->findOneBy([
             'utilisateur' => $user,

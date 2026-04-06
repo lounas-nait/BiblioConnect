@@ -6,6 +6,7 @@ use App\Entity\Auteur;
 use App\Entity\Categorie;
 use App\Entity\Langue;
 use App\Entity\Livre;
+use App\Entity\Reservation;
 use App\Form\AuteurType;
 use App\Form\CategorieType;
 use App\Form\LangueType;
@@ -14,6 +15,7 @@ use App\Repository\AuteurRepository;
 use App\Repository\CategorieRepository;
 use App\Repository\LangueRepository;
 use App\Repository\LivreRepository;
+use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,6 +39,34 @@ class LibrarianController extends AbstractController
             'categories' => $categorieRepository->findAll(),
             'langues' => $langueRepository->findAll(),
         ]);
+    }
+
+    #[Route('/librarian/reservations', name: 'librarian_reservations')]
+    public function reservations(ReservationRepository $reservationRepository): Response
+    {
+        return $this->render('librarian/reservations.html.twig', [
+            'reservations' => $reservationRepository->findBy([], ['dateReservation' => 'DESC']),
+        ]);
+    }
+
+    #[Route('/librarian/reservation/{id}/validate', name: 'librarian_reservation_validate', methods: ['POST'])]
+    public function validateReservation(Reservation $reservation, EntityManagerInterface $entityManager): Response
+    {
+        $reservation->setStatus('validée');
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Réservation validée.');
+        return $this->redirectToRoute('librarian_reservations');
+    }
+
+    #[Route('/librarian/reservation/{id}/reject', name: 'librarian_reservation_reject', methods: ['POST'])]
+    public function rejectReservation(Reservation $reservation, EntityManagerInterface $entityManager): Response
+    {
+        $reservation->setStatus('annulée');
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Réservation annulée.');
+        return $this->redirectToRoute('librarian_reservations');
     }
 
     #[Route('/librarian/book/new', name: 'librarian_book_new')]

@@ -19,9 +19,9 @@ class ReservationController extends AbstractController
     #[Route('/reserve/{id}', name: 'reserve_book')]
     public function reserve(Livre $livre, Request $request, EntityManagerInterface $entityManager): Response
     {
-        if ($livre->getStock() !== null && $livre->getStock() <= 0) {
-            $this->addFlash('warning', 'Ce livre n’est plus disponible au stock pour le moment.');
-            return $this->redirectToRoute('catalogue_show', ['id' => $livre->getId()]);
+        // Bloquer admins et librarians
+        if ($this->isGranted('ROLE_LIBRARIAN') || $this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Les bibliothécaires et administrateurs ne peuvent pas réserver de livres.');
         }
 
         $reservation = new Reservation();

@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réservations - BiblioConnect{% endblock %}
+
+{% block body %}
+<div class="page-card">
+    <div class="section-heading">
+        <div>
+            <h1>Gestion des réservations</h1>
+            <p class="small-text">Validez ou rejetez les réservations en attente des utilisateurs.</p>
+        </div>
+    </div>
+
+    {% if reservations|length > 0 %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #eef2ff; border-bottom: 2px solid #4338ca;">
+                        <th style="padding: 1rem; text-align: left;">Livre</th>
+                        <th style="padding: 1rem; text-align: left;">Utilisateur</th>
+                        <th style="padding: 1rem; text-align: left;">Date de réservation</th>
+                        <th style="padding: 1rem; text-align: left;">Statut</th>
+                        <th style="padding: 1rem; text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr style="border-bottom: 1px solid #e2e8f0; {% if reservation.status == 'en attente' %}background: #fef3c7;{% endif %}">
+                            <td style="padding: 1rem;">{{ reservation.livre.titre }}</td>
+                            <td style="padding: 1rem;">{{ reservation.utilisateur.prenom }} {{ reservation.utilisateur.nom }}</td>
+                            <td style="padding: 1rem;">{{ reservation.dateReservation|date('d/m/Y H:i') }}</td>
+                            <td style="padding: 1rem;">
+                                <span class="badge" style="
+                                    background: {% if reservation.status == 'en attente' %}#fbbf24{% elseif reservation.status == 'validée' %}#86efac{% else %}#f87171{% endif %};
+                                    color: #000;
+                                ">{{ reservation.status }}</span>
+                            </td>
+                            <td style="padding: 1rem; text-align: center;">
+                                {% if reservation.status == 'en attente' %}
+                                    <form method="post" action="{{ path('librarian_reservation_validate', {'id': reservation.id}) }}" style="display: inline-block;">
+                                        <button class="btn btn-primary" type="submit" style="padding: 0.6rem 1rem; font-size: 0.9rem;">Valider</button>
+                                    </form>
+                                    <form method="post" action="{{ path('librarian_reservation_reject', {'id': reservation.id}) }}" style="display: inline-block;">
+                                        <button class="btn btn-secondary" type="submit" style="padding: 0.6rem 1rem; font-size: 0.9rem;">Rejeter</button>
+                                    </form>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert">Aucune réservation enregistrée pour le moment.</div>
+    {% endif %}
+</div>
+{% endblock %}

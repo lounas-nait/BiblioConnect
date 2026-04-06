@@ -18,6 +18,11 @@ class CommentaireController extends AbstractController
     #[Route('/commentaire/add/{id}', name: 'commentaire_add')]
     public function add(Livre $livre, Request $request, EntityManagerInterface $entityManager): Response
     {
+        // Bloquer admins et librarians
+        if ($this->isGranted('ROLE_LIBRARIAN') || $this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Les bibliothécaires et administrateurs ne peuvent pas ajouter d\'avis.');
+        }
+
         $commentaire = new Commentaire();
         $form = $this->createForm(CommentaireType::class, $commentaire);
         $form->handleRequest($request);

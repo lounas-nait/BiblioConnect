@@ -10,13 +10,13 @@
             <p class="small-text">Auteur : {{ livre.auteur }} · Langue : {{ livre.langue ?: 'Non renseignée' }}</p>
         </div>
         <div>
-            {% if app.user %}
+            {% if is_granted('ROLE_USER') and not is_granted('ROLE_LIBRARIAN') and not is_granted('ROLE_ADMIN') %}
                 {% if isFavorite %}
                     <a class="btn btn-secondary" href="{{ path('favorite_toggle', {'id': livre.id}) }}">Retirer des favoris</a>
                 {% else %}
                     <a class="btn btn-primary" href="{{ path('favorite_toggle', {'id': livre.id}) }}">Ajouter aux favoris</a>
                 {% endif %}
-            {% else %}
+            {% elseif not app.user %}
                 <a class="btn btn-primary" href="{{ path('app_login') }}">Connectez-vous pour ajouter aux favoris</a>
             {% endif %}
         </div>
@@ -33,6 +33,7 @@
             <p>{{ livre.description ?: 'Aucune description disponible pour ce livre.' }}</p>
         </div>
 
+        {% if is_granted('ROLE_USER') and not is_granted('ROLE_LIBRARIAN') and not is_granted('ROLE_ADMIN') %}
         <div class="book-card">
             <h2>Réserver ce livre</h2>
             {% if app.user %}
@@ -45,6 +46,7 @@
                 <a href="{{ path('app_login') }}" class="btn btn-primary">Connexion</a>
             {% endif %}
         </div>
+        {% endif %}
 
         <div class="book-card" style="grid-column: span 2;">
             <h2>Avis des lecteurs</h2>
@@ -63,14 +65,14 @@
                 <div class="small-text">Aucun avis pour le moment. Soyez le premier à donner votre avis.</div>
             {% endif %}
 
-            {% if app.user %}
+            {% if app.user and (is_granted('ROLE_USER') and not is_granted('ROLE_LIBRARIAN') and not is_granted('ROLE_ADMIN')) %}
                 <h3>Publier un avis</h3>
                 {{ form_start(commentForm, {'action': path('commentaire_add', {'id': livre.id})}) }}
                     {{ form_row(commentForm.note) }}
                     {{ form_row(commentForm.contenu) }}
                     <button class="btn btn-primary" type="submit">Publier</button>
                 {{ form_end(commentForm) }}
-            {% else %}
+            {% elseif not app.user %}
                 <p class="small-text">Connectez-vous pour commenter et noter cet ouvrage.</p>
             {% endif %}
         </div>
