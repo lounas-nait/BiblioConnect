@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ livre.titre }} - BiblioConnect{% endblock %}
+
+{% block body %}
+<div class="page-card">
+    <div class="section-heading">
+        <div>
+            <h1>{{ livre.titre }}</h1>
+            <p class="small-text">Auteur : {{ livre.auteur }} · Langue : {{ livre.langue ?: 'Non renseignée' }}</p>
+        </div>
+        <div>
+            {% if app.user %}
+                {% if isFavorite %}
+                    <a class="btn btn-secondary" href="{{ path('favorite_toggle', {'id': livre.id}) }}">Retirer des favoris</a>
+                {% else %}
+                    <a class="btn btn-primary" href="{{ path('favorite_toggle', {'id': livre.id}) }}">Ajouter aux favoris</a>
+                {% endif %}
+            {% else %}
+                <a class="btn btn-primary" href="{{ path('app_login') }}">Connectez-vous pour ajouter aux favoris</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card-grid">
+        <div class="book-card">
+            <p class="small-text">Stock disponible: <strong>{{ livre.stock ?? 'Non précisé' }}</strong></p>
+            <div style="margin: 1rem 0;">
+                {% for categorie in livre.categories %}
+                    <span class="badge">{{ categorie.nom }}</span>
+                {% endfor %}
+            </div>
+            <p>{{ livre.description ?: 'Aucune description disponible pour ce livre.' }}</p>
+        </div>
+
+        <div class="book-card">
+            <h2>Réserver ce livre</h2>
+            {% if app.user %}
+                {{ form_start(reservationForm, {'action': path('reserve_book', {'id': livre.id})}) }}
+                    {{ form_row(reservationForm.dateReservation) }}
+                    <button class="btn btn-primary" type="submit">Réserver</button>
+                {{ form_end(reservationForm) }}
+            {% else %}
+                <p class="small-text">Vous devez être connecté pour réserver ce livre.</p>
+                <a href="{{ path('app_login') }}" class="btn btn-primary">Connexion</a>
+            {% endif %}
+        </div>
+
+        <div class="book-card" style="grid-column: span 2;">
+            <h2>Avis des lecteurs</h2>
+            {% if livre.commentaires|length > 0 %}
+                {% for commentaire in livre.commentaires %}
+                    <div style="margin-bottom: 1.25rem; padding: 1rem; border-radius: 18px; background: #f8fafc;">
+                        <div class="small-text">Par {{ commentaire.utilisateur.nom }} {{ commentaire.utilisateur.prenom }} - {{ commentaire.date|date('d/m/Y H:i') }}</div>
+                        <div style="margin: 0.5rem 0;">
+                        {% for i in 1..commentaire.note %}★{% endfor %}
+                        {% for i in 1..(5 - commentaire.note) %}☆{% endfor %}
+                    </div>
+                        <p>{{ commentaire.contenu }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="small-text">Aucun avis pour le moment. Soyez le premier à donner votre avis.</div>
+            {% endif %}
+
+            {% if app.user %}
+                <h3>Publier un avis</h3>
+                {{ form_start(commentForm, {'action': path('commentaire_add', {'id': livre.id})}) }}
+                    {{ form_row(commentForm.note) }}
+                    {{ form_row(commentForm.contenu) }}
+                    <button class="btn btn-primary" type="submit">Publier</button>
+                {{ form_end(commentForm) }}
+            {% else %}
+                <p class="small-text">Connectez-vous pour commenter et noter cet ouvrage.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

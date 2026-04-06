@@ -47,6 +47,11 @@ class Auteur
         return $this;
     }
 
+    public function __toString(): string
+    {
+        return trim(($this->prenom ? $this->prenom . ' ' : '') . $this->nom);
+    }
+
     public function getPrenom(): ?string
     {
         return $this->prenom;

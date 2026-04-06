@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier les rôles - BiblioConnect{% endblock %}
+
+{% block body %}
+<div class="page-card" style="max-width: 720px; margin: 0 auto;">
+    <div class="section-heading">
+        <div>
+            <h1>Modifier les rôles de {{ user.prenom }} {{ user.nom }}</h1>
+            <p class="small-text">Attribuez des droits d'administrateur ou de bibliothécaire à cet utilisateur.</p>
+        </div>
+    </div>
+
+    {{ form_start(form) }}
+        {{ form_row(form.roles) }}
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

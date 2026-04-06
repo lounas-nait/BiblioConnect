@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalogue - BiblioConnect{% endblock %}
+
+{% block body %}
+<div class="page-card">
+    <div class="section-heading">
+        <div>
+            <h1>Catalogue des ouvrages</h1>
+            <p class="small-text">Recherchez par titre, auteur ou catégorie et consultez le détail de chaque livre.</p>
+        </div>
+    </div>
+
+    <form method="get" class="form-card" style="display:grid; gap:1rem;">
+        <input type="text" name="q" placeholder="Rechercher un titre, un auteur ou une catégorie" value="{{ term }}">
+        <select name="category">
+            <option value="">Toutes les catégories</option>
+            {% for categorie in categories %}
+                <option value="{{ categorie.id }}" {% if selectedCategory and selectedCategory.id == categorie.id %}selected{% endif %}>{{ categorie.nom }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-primary" type="submit">Rechercher</button>
+    </form>
+
+    <div class="card-grid" style="margin-top: 1.5rem;">
+        {% for livre in livres %}
+            <article class="bookcard book-card">
+                <h2>{{ livre.titre }}</h2>
+                <div class="small-text">Auteur&nbsp;: {{ livre.auteur }}</div>
+                <div class="small-text">Langue&nbsp;: {{ livre.langue ?: 'Non renseignée' }}</div>
+                <div style="margin: 1rem 0;">
+                    {% for categorie in livre.categories %}
+                        <span class="badge">{{ categorie.nom }}</span>
+                    {% endfor %}
+                </div>
+                <p class="small-text">{{ livre.description ? livre.description|slice(0, 180) ~ '…' : 'Aucune description disponible.' }}</p>
+                <div class="small-text">Stock disponible&nbsp;: {{ livre.stock ?? 'Non précisé' }}</div>
+                <div style="margin-top: 1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+                    <a class="btn btn-primary" href="{{ path('catalogue_show', {'id': livre.id}) }}">Voir le livre</a>
+                </div>
+            </article>
+        {% else %}
+            <div class="alert">Aucun livre ne correspond à votre recherche.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

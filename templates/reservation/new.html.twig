@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réserver {{ livre.titre }} - BiblioConnect{% endblock %}
+
+{% block body %}
+<div class="page-card" style="max-width: 620px; margin: 0 auto;">
+    <div class="section-heading">
+        <div>
+            <h1>Réserver « {{ livre.titre }} »</h1>
+            <p class="small-text">Choisissez la date à laquelle vous souhaitez récupérer l'ouvrage.</p>
+        </div>
+    </div>
+
+    {{ form_start(reservationForm) }}
+        {{ form_row(reservationForm.dateReservation) }}
+        <button class="btn btn-primary" type="submit">Confirmer la réservation</button>
+    {{ form_end(reservationForm) }}
+</div>
+{% endblock %}

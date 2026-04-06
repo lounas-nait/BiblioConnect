@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - BiblioConnect{% endblock %}
+
+{% block body %}
+<div class="page-card">
+    <div class="section-heading">
+        <div>
+            <h1>Tableau de bord admin</h1>
+            <p class="small-text">Contrôlez les réservations, modérez les commentaires et gérez les utilisateurs.</p>
+        </div>
+    </div>
+
+    <div class="admin-grid">
+        <section class="item-card">
+            <h2>Utilisateurs</h2>
+            <ul>
+                {% for user in users %}
+                    <li style="margin-bottom:0.75rem;">
+                        <strong>{{ user.prenom }} {{ user.nom }}</strong> — {{ user.email }}
+                        <div class="small-text">Rôles : {{ user.roles|join(', ') }}</div>
+                        <a class="btn btn-secondary" href="{{ path('admin_user_roles', {'id': user.id}) }}">Modifier les rôles</a>
+                    </li>
+                {% else %}
+                    <p class="small-text">Aucun utilisateur trouvé.</p>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="item-card">
+            <h2>Réservations récentes</h2>
+            <ul>
+                {% for reservation in reservations|slice(0, 6) %}
+                    <li style="margin-bottom:0.75rem;">
+                        <strong>{{ reservation.livre.titre }}</strong> réservé par {{ reservation.utilisateur.prenom }} {{ reservation.utilisateur.nom }}
+                        <div class="small-text">{{ reservation.dateReservation|date('d/m/Y H:i') }} — {{ reservation.status }}</div>
+                    </li>
+                {% else %}
+                    <p class="small-text">Aucune réservation enregistrée.</p>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="item-card" style="grid-column: span 2;">
+            <h2>Commentaires</h2>
+            {% for commentaire in commentaires|slice(0, 8) %}
+                <div style="margin-bottom:1rem; padding:1rem; border-radius:18px; background:#f8fafc;">
+                    <div class="small-text">{{ commentaire.utilisateur.prenom }} {{ commentaire.utilisateur.nom }} — {{ commentaire.date|date('d/m/Y H:i') }}</div>
+                    <div style="margin:0.5rem 0;">{{ commentaire.contenu }}</div>
+                    <form method="post" action="{{ path('admin_comment_delete', {'id': commentaire.id}) }}">
+                        <button class="btn btn-secondary" type="submit">Supprimer</button>
+                    </form>
+                </div>
+            {% else %}
+                <p class="small-text">Aucun commentaire à modérer.</p>
+            {% endfor %}
+        </section>
+    </div>
+</div>
+{% endblock %}

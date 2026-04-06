@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil - BiblioConnect{% endblock %}
+
+{% block body %}
+<div class="page-card">
+    <div class="section-heading">
+        <div>
+            <h1>Mon espace</h1>
+            <p class="small-text">Bienvenue {{ user.prenom }} {{ user.nom }}. Gérez vos réservations, favoris et avis ici.</p>
+        </div>
+    </div>
+
+    <div class="profile-lists">
+        <section class="item-card">
+            <h2>Mes réservations</h2>
+            {% if reservations|length > 0 %}
+                <ul>
+                    {% for reservation in reservations %}
+                        <li style="margin-bottom:1rem;">
+                            <strong>{{ reservation.livre.titre }}</strong> — réservé pour le {{ reservation.dateReservation|date('d/m/Y H:i') }}
+                            <div class="small-text">Statut : {{ reservation.status }}</div>
+                            <form method="post" action="{{ path('profile_reservation_cancel', {'id': reservation.id}) }}" style="display:inline-block; margin-top:0.5rem;">
+                                <button class="btn btn-secondary" type="submit">Annuler</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="small-text">Aucune réservation enregistrée.</p>
+            {% endif %}
+        </section>
+
+        <section class="item-card">
+            <h2>Mes favoris</h2>
+            {% if favoris|length > 0 %}
+                <ul>
+                    {% for favori in favoris %}
+                        <li style="margin-bottom:1rem;">
+                            <strong>{{ favori.livre.titre }}</strong>
+                            <div class="small-text">Auteur : {{ favori.livre.auteur }}</div>
+                            <form method="post" action="{{ path('profile_favorite_remove', {'id': favori.id}) }}" style="display:inline-block; margin-top:0.5rem;">
+                                <button class="btn btn-secondary" type="submit">Retirer</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="small-text">Vous n'avez pas encore ajouté de favoris.</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

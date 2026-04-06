@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }} - BiblioConnect{% endblock %}
+
+{% block body %}
+<div class="page-card" style="max-width: 620px; margin: 0 auto;">
+    <div class="section-heading">
+        <div>
+            <h1>{{ title }}</h1>
+            <p class="small-text">Ajoutez une nouvelle référence qui pourra être utilisée pour enrichir les livres.</p>
+        </div>
+    </div>
+
+    {{ form_start(form) }}
+        {{ form_row(form) }}
+        <button class="btn btn-primary" type="submit">Ajouter</button>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

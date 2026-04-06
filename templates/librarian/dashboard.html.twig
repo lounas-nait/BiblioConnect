@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bibliothécaire - BiblioConnect{% endblock %}
+
+{% block body %}
+<div class="page-card">
+    <div class="section-heading">
+        <div>
+            <h1>Espace bibliothécaire</h1>
+            <p class="small-text">Gérez le catalogue, les auteurs, les catégories et les langues.</p>
+        </div>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <a class="btn btn-primary" href="{{ path('librarian_book_new') }}">Ajouter un livre</a>
+            <a class="btn btn-secondary" href="{{ path('librarian_auteur_new') }}">Ajouter un auteur</a>
+            <a class="btn btn-secondary" href="{{ path('librarian_categorie_new') }}">Ajouter une catégorie</a>
+            <a class="btn btn-secondary" href="{{ path('librarian_langue_new') }}">Ajouter une langue</a>
+        </div>
+    </div>
+
+    <section class="item-card">
+        <h2>Livres</h2>
+        <ul>
+            {% for livre in livres %}
+                <li style="margin-bottom:0.75rem;">
+                    <strong>{{ livre.titre }}</strong> — {{ livre.auteur }}
+                    <div class="small-text">Stock : {{ livre.stock }}</div>
+                    <a class="btn btn-secondary" href="{{ path('librarian_book_edit', {'id': livre.id}) }}">Modifier</a>
+                </li>
+            {% else %}
+                <p class="small-text">Aucun livre dans le catalogue.</p>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <div class="admin-grid" style="margin-top:1.5rem;">
+        <section class="item-card">
+            <h2>Auteurs</h2>
+            <ul>
+                {% for auteur in auteurs %}
+                    <li>{{ auteur }}</li>
+                {% else %}
+                    <p class="small-text">Aucun auteur ajouté.</p>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="item-card">
+            <h2>Catégories</h2>
+            <ul>
+                {% for categorie in categories %}
+                    <li>{{ categorie.nom }}</li>
+                {% else %}
+                    <p class="small-text">Aucune catégorie ajoutée.</p>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="item-card">
+            <h2>Langues</h2>
+            <ul>
+                {% for langue in langues %}
+                    <li>{{ langue.nom }}</li>
+                {% else %}
+                    <p class="small-text">Aucune langue ajoutée.</p>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+</div>
+{% endblock %}

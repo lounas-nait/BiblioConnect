@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }} - BiblioConnect{% endblock %}
+
+{% block body %}
+<div class="page-card" style="max-width: 760px; margin: 0 auto;">
+    <div class="section-heading">
+        <div>
+            <h1>{{ title }}</h1>
+            <p class="small-text">Remplissez les informations du livre pour le rendre disponible sur la plateforme.</p>
+        </div>
+    </div>
+
+    {{ form_start(form) }}
+        {{ form_row(form.titre) }}
+        {{ form_row(form.auteur) }}
+        {{ form_row(form.categories) }}
+        {{ form_row(form.langue) }}
+        {{ form_row(form.image) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.stock) }}
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

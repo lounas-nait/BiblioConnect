@@ -33,4 +33,30 @@ class LivreRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    /**
+     * @return Livre[]
+     */
+    public function search(?string $term, ?Categorie $category = null): array
+    {
+        $qb = $this->createQueryBuilder('l')
+            ->leftJoin('l.auteur', 'a')
+            ->leftJoin('l.categories', 'c')
+            ->leftJoin('l.langue', 'lang')
+            ->addSelect('a')
+            ->addSelect('c')
+            ->addSelect('lang');
+
+        if ($term) {
+            $qb->andWhere('l.titre LIKE :term OR a.nom LIKE :term OR c.nom LIKE :term')
+                ->setParameter('term', '%' . $term . '%');
+        }
+
+        if ($category) {
+            $qb->andWhere(':category MEMBER OF l.categories')
+                ->setParameter('category', $category);
+        }
+
+        return $qb->orderBy('l.titre', 'ASC')->getQuery()->getResult();
+    }
 }
